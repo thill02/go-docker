@@ -1,34 +1,35 @@
 version: "3"
 services:
-  postgres:
+  db:
     image: postgres
-    volumes:
-      - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_PASSWORD=postgres
-      - PGDATA= /var/lib/postgresql/data
+      POSTGRES_DB: dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - 5432:5432
   api:
     build: .
-    environment:
-      - DB_USER=postgres
-      - DB_PASS=postgres
-      - DB_NAME=postgres
-      - DB_HOST=localhost
-    ports:
-      - "80:80"
-  pgadmin:
-    image: dpage/pgadmin4:4.18
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=postgres@postgres.com
-      - PGADMIN_DEFAULT_PASSWORD=postgres
-      # PGADMIN_LISTEN_PORT=80
-    ports:
-      - "8080:80"
+    command: ["db:5432", "--", "go", "run", "main.go"]
     volumes:
-      - pgadmin-data:/var/lib/pgadmin
+      - .:/go/src/app
+    ports:
+      - "80:8080"
+    depends_on:
+      - db
+    links:
+      - db
+  # pgadmin:
+  #   image: dpage/pgadmin4:4.18
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=postgres@postgres.com
+  #     - PGADMIN_DEFAULT_PASSWORD=postgres
+  #     # PGADMIN_LISTEN_PORT=80
+  #   ports:
+  #     - "8080:80"
+  #   volumes:
+  #     - pgadmin-data:/var/lib/pgadmin
 
-volumes:
-  db-data:
-  pgadmin-data:
+# volumes:
+#   db-data:
+#   pgadmin-data:
