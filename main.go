@@ -8,7 +8,7 @@ import (
 
 	// "api/root/appconfig"
 	"github.com/thill02/go-docker/dbutils"
-	"github.com/thill02/go-docker/root/handlers"
+	"github.com/thill02/go-docker/handlers"
 
 	"github.com/apex/gateway"
 	"github.com/labstack/echo"
