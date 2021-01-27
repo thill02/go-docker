@@ -1,22 +1,38 @@
 package main
 
 import (
-    "fmt"
-    "html"
-    "log"
-    "net/http"
+  "database/sql"
+  "fmt"
+
+  _ "github.com/lib/pq"
+)
+
+const (
+  host     = "localhost"
+  port     = 5432
+  user     = "postgres"
+  password = "postgres"
+  dbname   = "postgres"
 )
 
 func main() {
+  psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+    "password=%s dbname=%s sslmode=disable",
+    host, port, user, password, dbname)
+  db, err := sql.Open("postgres", psqlInfo)
+  if err != nil {
+    panic(err)
+  }
+  defer db.Close()
 
-    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
-    })
+  err = db.Ping()
+  if err != nil {
+    panic(err)
+  }
 
-    http.HandleFunc("/hi", func(w http.ResponseWriter, r *http.Request){
-        fmt.Fprintf(w, "Hi")
-    })
-
-    log.Fatal(http.ListenAndServe(":8081", nil))
-
+  fmt.Println("Successfully connected!")
+//   fmt.Printf("Starting server at port 8080\n")
+// 	if err := http.ListenAndServe(":80", nil); err != nil {
+// 		log.Fatal(err)
+// 	}
 }
